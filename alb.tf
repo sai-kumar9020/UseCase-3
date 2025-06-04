@@ -8,13 +8,13 @@ resource "aws_lb" "app_alb" {
 
 resource "aws_lb_target_group" "tg" {
   name     = "openproject-tg"
-  port     = 8080
+  port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
   target_type = "instance"
   health_check {
     path                = "/"
-    port                = "8080"
+    port                = "80"
     protocol            = "HTTP"
     matcher             = "200"
     interval            = 30
@@ -27,7 +27,7 @@ resource "aws_lb_target_group" "tg" {
 resource "aws_lb_target_group_attachment" "attach" {
   target_group_arn = aws_lb_target_group.tg.arn
   target_id        = aws_instance.openproject.id
-  port             = 8080
+  port             = 80
 }
 
 
