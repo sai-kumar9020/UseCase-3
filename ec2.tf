@@ -5,14 +5,18 @@ resource "aws_instance" "openproject" {
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   key_name               = var.key_name # Replace with your key pair
 
-  user_data = <<-EOF
-              #!/bin/bash
-              yum update -y
-              amazon-linux-extras install docker -y
-              systemctl start docker
-              systemctl enable docker
-              docker run -d -p 8080:80 openproject/community:latest
-              EOF
+  user_data              = <<-EOF
+    #!/bin/bash
+    sudo apt update -y
+    curl -fsSL https://get.docker.com -o install-docker.sh
+    sudo sh install-docker.sh
+    sudo usermod -aG docker ubuntu
+    docker run -d -p 80:80 \
+     -e OPENPROJECT_SECRET_KEY_BASE=secret \
+     -e OPENPROJECT_HTTPS=false \
+     openproject/openproject:15.4.1
+
+    EOF
 
   tags = {
     Name = "OpenProject-EC2"
